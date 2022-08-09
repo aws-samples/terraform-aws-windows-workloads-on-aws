@@ -18,17 +18,6 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.eks_windows_cluster_data.token
 }
 
-## local
-#Common tags
-locals {
-  common_tags = tomap({
-    product       = "web1",
-    BusinessUnit  = "xyz",
-    Billing1      = "Prod",
-  })
-}
-
-
 ## Data
 
 data "aws_eks_cluster" "eks_windows_cluster_ca" {
@@ -100,40 +89,23 @@ data "aws_ami" "eks_optimized_ami" {
   }
 }
 
+data "aws_caller_identity" "account_id" {}
 
-################################################################################
-# KMS for encrypting secrets
-################################################################################
-
-resource "aws_kms_key" "eks" {
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-
- tags = merge(
-    local.common_tags,
-    {
-      "Name" = "eks-kms"
-    })
+output "account_id" {
+  value = data.aws_caller_identity.account_id.account_id
 }
-
-
-
-
-
-
 
 ## Security Group
 
 resource "aws_security_group" "cluster_sg" {
   name        = "cluster_sg"
-  description = "Cluster security group"
+  description = "Allow TLS inbound traffic"
   vpc_id      = data.aws_vpc.vpc_id.id
 }
 
 resource "aws_security_group" "windows_sg" {
   name        = "windows_sg"
-  description = "Windows node security group"
+  description = "Allow TLS inbound traffic"
   vpc_id      = data.aws_vpc.vpc_id.id
 
   egress {
@@ -146,7 +118,6 @@ resource "aws_security_group" "windows_sg" {
 
 resource "aws_security_group_rule" "rule_worker_windows" {
   type                     = "ingress"
-  description              = "windows security group rule"
   from_port                = 0
   to_port                  = 0
   protocol                 = -1
@@ -156,7 +127,6 @@ resource "aws_security_group_rule" "rule_worker_windows" {
 
 resource "aws_security_group_rule" "rule_control_plane" {
   type                     = "ingress"
-  description              = "control plane security group rule"
   from_port                = 0
   to_port                  = 0
   protocol                 = -1
@@ -276,27 +246,12 @@ resource "aws_iam_instance_profile" "eks_windows_workernode_instance_profile" {
 
 resource "aws_eks_cluster" "eks_windows" {
   name     = var.eks_cluster_name
-  enabled_cluster_log_types = ["api","audit","authenticator","controllerManager","scheduler"] #var.enabled_cluster_log_types
   role_arn = aws_iam_role.eks_iam_role_cluster_service.arn
   version  = var.eks_cluster_version
 
-
-encryption_config {
-    provider {
-      key_arn = aws_kms_key.eks.arn
-    }
-    resources = ["secrets"]
-  }
-
-
   vpc_config {
-    #security_group_ids      = var.create_security_group ? compact(concat(var.associated_security_group_ids, [join("", aws_security_group.default.*.id)])) : var.associated_security_group_ids
-    subnet_ids              = data.aws_subnets.private_subnets.ids
-    endpoint_private_access = true
-    endpoint_public_access = false
-    public_access_cidrs    = var.public_access_cidrs
+    subnet_ids = data.aws_subnets.private_subnets.ids
   }
-  
 }
 
 ## EKS Cluster Addon
@@ -330,13 +285,13 @@ resource "kubernetes_config_map" "configmap" {
 - groups:
   - system:bootstrappers
   - system:nodes
-  rolearn: arn:aws:iam::629760017811:role/eks-node-group-linux-role
+  rolearn: arn:aws:iam::${data.aws_caller_identity.account_id.account_id}:role/eks-node-group-linux-role
   username: system:node:{{EC2PrivateDNSName}}
 - groups:
   - eks:kube-proxy-windows
   - system:bootstrappers
   - system:nodes
-  rolearn: arn:aws:iam::629760017811:role/eks-node-group-windows-role
+  rolearn: arn:aws:iam::${data.aws_caller_identity.account_id.account_id}:role/eks-node-group-windows-role
   username: system:node:{{EC2PrivateDNSName}}
 EOT
   }
@@ -447,10 +402,4 @@ resource "aws_autoscaling_group" "eks-windows-nodegroup-asg" {
     create_before_destroy = true
     ignore_changes        = [desired_capacity, target_group_arns]
   }
-  tag {
-    key                 = "aws-eks"
-    value               = "aws-eks"
-    propagate_at_launch = true
-  }
-
 }
