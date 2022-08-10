@@ -20,7 +20,8 @@ Terraform module which creates an Route 53 Outbound Resolver
 
 ```hcl
 module "route53-resolver" {
-  source = "../route53-resolver"
+  source  = "aws-samples/windows-workloads-on-aws/aws//modules/route53-resolver"
+  version = "1.0.2"
 
   r53_ports = [
   {

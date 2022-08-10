@@ -22,7 +22,9 @@ Terraform module which create R53 Outbound Resolver Rules
 
 ```hcl
 module "route53" {
-  source = "../route53-resolver-rule"
+  source  = "aws-samples/windows-workloads-on-aws/aws//modules/route53-resolver-rule"
+  version = "1.0.2"
+
   dns_ip1 = "10.0.0.10"
   dns_ip2 = "10.0.0.11"
   domain_fqdn = "corp.local"

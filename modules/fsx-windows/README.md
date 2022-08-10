@@ -30,7 +30,8 @@ Terraform module which deploys Amazon FSx for Windows Filesystem integrated with
 
 ```hcl
 module "fsx-windows" {
-  source = "../fsx-windows"
+  source  = "aws-samples/windows-workloads-on-aws/aws//modules/fsx-windows"
+  version = "1.0.2"
 
   automatic_backup_retention_days = 7
   deployment_type                 = "SINGLE_AZ_2"

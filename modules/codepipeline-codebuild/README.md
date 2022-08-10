@@ -21,7 +21,8 @@ NOTE: After deploying the pipeline for the first time, there's a manual action f
 
 ```hcl
 module "codepipeline-codebuild" {
-  source = "../codepipeline-codebuild"
+  source  = "aws-samples/windows-workloads-on-aws/aws//modules/codepipeline-codebuild"
+  version = "1.0.2"
 
   codebuild_project_name = "modernization-build-project"
   ecr_repository_name    = "modernization-repo"

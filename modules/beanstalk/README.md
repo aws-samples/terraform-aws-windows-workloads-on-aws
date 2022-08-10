@@ -33,7 +33,8 @@ Terraform module which manages AWS Elastic Beanstalk resources related to Window
 
 ```hcl
 module "beanstalk" {
-  source = "../beanstalk"
+  source  = "aws-samples/windows-workloads-on-aws/aws//modules/beanstalk"
+  version = "1.0.2"
 
   vpc_id                                          = "vpc-1234567"
   private_subnets                                 = ["subnet-123456","subnet-654321"]
