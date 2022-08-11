@@ -22,7 +22,7 @@ resource "random_password" "mad_admin_password" {
 }
 
 resource "aws_secretsmanager_secret" "mad_admin_secret" {
-  name = "${var.ds_managed_ad_directory_name}_${local.ds_managed_ad_admin_secret_sufix}"
+  name       = "${var.ds_managed_ad_directory_name}_${local.ds_managed_ad_admin_secret_sufix}"
   kms_key_id = var.ds_managed_ad_secret_key
 }
 

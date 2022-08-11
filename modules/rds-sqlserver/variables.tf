@@ -1,7 +1,7 @@
 ## Security Group
 variable "rdssql_db_subnet_group_name" {
-  type    = string
-  default = "rdssql_db_subnet_group"
+  type        = string
+  default     = "rdssql_db_subnet_group"
   description = "Name for the DB subnet group"
 }
 
@@ -21,8 +21,8 @@ variable "rdssql_ingress_ports" {
 ## Iam Roles for Domain join
 
 variable "ManagedPolicy" {
-  type    = list(any)
-  default = ["arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"]
+  type        = list(any)
+  default     = ["arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"]
   description = "Managed policy for making calls to your directory"
 }
 
@@ -35,14 +35,14 @@ variable "rdssql_engine" {
 }
 
 variable "rdssql_engine_version" {
-  type        = list
+  type        = list(any)
   default     = ["15.00", "14.00", "13.00", "12.00"]
   description = "15.00 = SQL Server 2019 / 14.00 = SQL Server 2017 / 13.00 = SQL Server 2016 / 12.00 = SQL Server 2014"
 }
 
 variable "rdssql_password" {
   type        = string
-  default = "MyStrongPa$$w0rd"
+  default     = "MyStrongPa$$w0rd"
   description = "RDS Admin password"
   sensitive   = true
   ## Terraform _ Sensitive Variables = https://learn.hashicorp.com/tutorials/terraform/sensitive_variables

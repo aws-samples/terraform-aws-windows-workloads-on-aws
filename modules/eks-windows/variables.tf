@@ -1,6 +1,6 @@
 variable "eks_cluster_name" {
-  type    = string
-  default = "eks-windows"
+  type        = string
+  default     = "eks-windows"
   description = "Namne of the EKS cluster"
 }
 
@@ -72,26 +72,26 @@ variable "cluster_encryption_config_resources" {
 }
 
 variable "eks_cluster_version" {
-  type    = string
-  default = "1.22"
+  type        = string
+  default     = "1.22"
   description = "Version for the EKS cluster"
 }
 
 variable "launch_template_name" {
-  type    = string
-  default = "eks-windows-lt"
+  type        = string
+  default     = "eks-windows-lt"
   description = "Name for the launch template"
 }
 
 variable "ec2_instance_types" {
-  type    = string
-  default = "t3.medium"
+  type        = string
+  default     = "t3.medium"
   description = "EC2 instance type"
 }
 
 variable "eks_windows_workernode_instance_profile_name" {
-  type    = string
-  default = "eks_windows_workernode_instance_profile"
+  type        = string
+  default     = "eks_windows_workernode_instance_profile"
   description = "Worker node instance profile name"
 }
 

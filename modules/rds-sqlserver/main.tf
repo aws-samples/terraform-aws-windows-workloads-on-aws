@@ -64,8 +64,8 @@ resource "aws_security_group" "rdssql_ingress" {
 ## VPC Endpoints
 
 resource "aws_vpc_endpoint" "rds_vpc_endpoint" {
-  vpc_id     = data.aws_vpc.vpc_id.id
-  subnet_ids = data.aws_subnet_ids.private_subnets_ids.ids
+  vpc_id              = data.aws_vpc.vpc_id.id
+  subnet_ids          = data.aws_subnet_ids.private_subnets_ids.ids
   service_name        = "com.amazonaws.us-east-1.rds-data"
   vpc_endpoint_type   = "Interface"
   auto_accept         = true

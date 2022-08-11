@@ -20,5 +20,5 @@ variable "dns_ip2" {
 
 variable "resolver_endpoint_id" {
   description = "Endpoint ID of the R53 resolver the rule will be associated with"
-  type = string
+  type        = string
 }

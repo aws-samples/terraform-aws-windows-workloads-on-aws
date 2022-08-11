@@ -9,7 +9,6 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-  profile = "terraform-bootcamp"
 }
 
 ## Data
@@ -26,14 +25,14 @@ data "aws_vpc" "vpc_id" {
   }
 }
 
- data "aws_subnets" "private_subnets" { 
+data "aws_subnets" "private_subnets" {
   filter {
     name   = "tag:Tier"
     values = ["Private"]
   }
 }
 
- data "aws_subnets" "public_subnets" { 
+data "aws_subnets" "public_subnets" {
   filter {
     name   = "tag:Tier"
     values = ["Public"]
@@ -130,12 +129,12 @@ resource "aws_security_group" "ecs_container_instances_ingress" {
   vpc_id      = data.aws_vpc.vpc_id.id
 
   ingress {
-      description = "Dynamic ports allows from ALB Security Group"
-      from_port       = 32768
-      to_port         = 65535
-      protocol        = "tcp"
-      security_groups = [aws_security_group.alb_ingress.id]
-    }
+    description     = "Dynamic ports allows from ALB Security Group"
+    from_port       = 32768
+    to_port         = 65535
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_ingress.id]
+  }
 
   egress {
     from_port        = local.any_port

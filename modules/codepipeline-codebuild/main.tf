@@ -8,14 +8,14 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
 # ECR Repository
 
 resource "aws_ecr_repository" "ecr_repository" {
-  name = var.ecr_repository_name
-  force_delete = true
+  name                 = var.ecr_repository_name
+  force_delete         = true
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -207,7 +207,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "codepipeline_buck
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "aws:kms"
+      sse_algorithm = "aws:kms"
     }
   }
 }
@@ -232,7 +232,7 @@ resource "aws_codepipeline" "build_pipeline" {
   artifact_store {
     location = aws_s3_bucket.codepipeline_bucket.bucket
     type     = "S3"
-    
+
     encryption_key {
       id   = data.aws_kms_alias.s3kmskey.arn
       type = "KMS"

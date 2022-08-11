@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
 ## Data
@@ -102,7 +102,7 @@ resource "aws_security_group" "secgroup_beanstalk_net_framework" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
-    description = "Allow all outbound"
+    description      = "Allow all outbound"
   }
 
   tags = var.tags

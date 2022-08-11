@@ -1,13 +1,13 @@
 ## VPC CIDR BLOCK
 variable "vpc_cidr_block" {
-  type = string
-  default = "10.0.0.0/16"
+  type        = string
+  default     = "10.0.0.0/16"
   description = "The IPv4 CIDR block for the VPC"
 }
 
 ## Private Subnet CIDR BLOCK
 variable "private_subnets" {
-  type        = map(number)
+  type = map(number)
   default = {
     "us-east-1a" = 1
     "us-east-1b" = 2
@@ -17,7 +17,7 @@ variable "private_subnets" {
 
 ## Public Subnet CIDR BLOCK
 variable "public_subnets" {
-  type        = map(number)
+  type = map(number)
   default = {
     "us-east-1a" = 3
     "us-east-1b" = 4

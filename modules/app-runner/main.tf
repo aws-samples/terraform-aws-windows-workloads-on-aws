@@ -2,39 +2,39 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version =  "~> 4.0"
+      version = "~> 4.0"
     }
   }
 }
 
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
 resource "aws_iam_role" "apprunner_role" {
-   name = "apprunner-role"
-   assume_role_policy = jsonencode({
-   "Version": "2012-10-17",
-   "Statement": [
-     {
-       "Action": "sts:AssumeRole",
-       "Principal": {
-         "Service": [
-           "build.apprunner.amazonaws.com",
-           "tasks.apprunner.amazonaws.com"
-         ]
-       },
-       "Effect": "Allow",
-       "Sid": ""
-     }
-   ]
- })
+  name = "apprunner-role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : "sts:AssumeRole",
+        "Principal" : {
+          "Service" : [
+            "build.apprunner.amazonaws.com",
+            "tasks.apprunner.amazonaws.com"
+          ]
+        },
+        "Effect" : "Allow",
+        "Sid" : ""
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "apprunner_policy_attachment" {
-   role       = aws_iam_role.apprunner_role.name
-   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
- }
+  role       = aws_iam_role.apprunner_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
+}
 
 
 resource "aws_apprunner_service" "apprunner_service" {
