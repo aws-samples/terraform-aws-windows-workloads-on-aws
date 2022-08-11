@@ -24,7 +24,6 @@ Terraform module which manages AWS Microsoft Managed AD resources.
 ```hcl
 module "managed-ad" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/managed-ad"
-  version = "1.0.2"
 
   ds_managed_ad_directory_name = "corp.local"
   ds_managed_ad_short_name     = "corp"

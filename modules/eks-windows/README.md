@@ -34,7 +34,6 @@ Terraform module which deploys an EKS cluster for Windows containers.
 ```hcl
 module "eks-windows" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/eks-windows"
-  version = "1.0.2"
 
   eks_cluster_name    = "eks-windows"
   eks_cluster_version = "1.22"

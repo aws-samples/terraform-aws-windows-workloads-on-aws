@@ -19,7 +19,6 @@ Terraform module which deploys a sample application into AWS App Runner.
 ```hcl
 module "app-runner" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/app-runner"
-  version = "1.0.2"
 
   apprunner_service_name = "apprunner-service"
   image_port             = "80"

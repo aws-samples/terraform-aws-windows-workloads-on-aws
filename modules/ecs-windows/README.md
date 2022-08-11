@@ -41,7 +41,6 @@ Terraform module which deploys an ECS cluster for Windows containers.
 ```hcl
 module "ecs-windows" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/ecs-windows"
-  version = "1.0.2"
 
   alb_name           = "ecs-alb"
   ecs_service_name   = "ecs_service_windows"

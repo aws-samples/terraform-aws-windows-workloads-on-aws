@@ -17,7 +17,6 @@ Terraform module which deploys a VPC with private and public subnets, internet g
 ```hcl
 module "vpc" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/vpc"
-  version = "1.0.2"
 
   vpc_cidr_block = "10.0.0.0/16"
   private_subnets = {

@@ -27,7 +27,6 @@ Terraform module which creates and RDS instance for SQL Server.
 ```hcl
 module "rds-sqlserver" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/rds-sqlserver"
-  version = "1.0.2"
 
   rds_db_instance_class = "db.t3.medium"
   user_name             = "admin_mssql"
