@@ -30,9 +30,7 @@ module "rds-sqlserver" {
   version = "1.0.2"
 
   rds_db_instance_class = "db.t3.medium"
-  user_name = "admin_mssql"
+  user_name             = "admin_mssql"
 }
 ```
 ## Outputs
-
-- **application_url**: URL to the AWS App Runner application 
