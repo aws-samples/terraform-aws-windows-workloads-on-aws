@@ -12,7 +12,7 @@ First of all, you can use a VPC module to deploy a fully functional VPC with pri
 
 You can choose between two options for using these modules:
 - Downloading the modules and including them in your project
-- Using them directly from the [Terraform registry](https://registry.terraform.io/modules/aws-samples/windows-workloads-on-aws/aws/1.0.2). From here, click the **submodules** banner and select the one you're interested in learning about. This will load all the information and instructions for using the module.
+- Using them directly from the [Terraform registry](https://registry.terraform.io/modules/aws-samples/windows-workloads-on-aws/aws). From here, click the **submodules** banner and select the one you're interested in learning about. This will load all the information and instructions for using the module.
 
 ## Security
 
