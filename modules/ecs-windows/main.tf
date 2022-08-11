@@ -9,6 +9,7 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+  profile = "terraform-bootcamp"
 }
 
 ## Data
@@ -106,9 +107,7 @@ resource "aws_security_group" "alb_ingress" {
 
   dynamic "ingress" {
     for_each = var.alb_ingress_ports
-    
     content {
-      description = "Ingress traffic from Internet"
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = local.tcp_protocol
@@ -117,7 +116,6 @@ resource "aws_security_group" "alb_ingress" {
   }
 
   egress {
-    description = "Egress traffic to anywhere"
     from_port        = local.any_port
     to_port          = local.any_port
     protocol         = local.any_protocol
@@ -140,7 +138,6 @@ resource "aws_security_group" "ecs_container_instances_ingress" {
     }
 
   egress {
-    description = "Dynamic ports allowed outbound"
     from_port        = local.any_port
     to_port          = local.any_port
     protocol         = local.any_protocol
@@ -170,11 +167,6 @@ resource "aws_launch_template" "ecs_container_instances" {
 
   lifecycle {
     create_before_destroy = true
-  }
-
-  metadata_options {
-      http_endpoint = "enabled"
-      http_tokens   = "required"
   }
 
   iam_instance_profile {
@@ -219,24 +211,16 @@ resource "aws_autoscaling_group" "asg_ecs_cluster" {
   vpc_zone_identifier = data.aws_subnets.private_subnets.ids
   force_delete        = true
   enabled_metrics     = local.asg_metrics
-  
+
   launch_template {
     id      = aws_launch_template.ecs_container_instances.id
     version = aws_launch_template.ecs_container_instances.latest_version
   }
-
-
   instance_refresh {
     strategy = "Rolling"
     preferences {
       min_healthy_percentage = 50
     }
-  }
-
-  tag {
-    key                 = "aws-eks"
-    value               = "aws-eks"
-    propagate_at_launch = true
   }
 }
 
@@ -272,7 +256,7 @@ TASK_DEFINITION
 
 resource "aws_ecs_task_definition" "ec2_task_definition_iis" {
   family                   = var.ec2_task_definition_name
-  execution_role_arn       = aws_iam_role.ecsInstanceRole.arn
+  execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   task_role_arn            = aws_iam_role.ecsTaskExecutionRole.arn
   cpu                      = var.ec2_task_definition_cpu
   memory                   = var.ec2_task_definition_memory
@@ -318,8 +302,6 @@ resource "aws_ecs_service" "ecs_ec2" {
   }
 }
 
-
-
 ## ALB
 
 resource "aws_lb" "ecs_alb" {
@@ -331,13 +313,6 @@ resource "aws_lb" "ecs_alb" {
   idle_timeout           = 60
   enable_http2           = true
   desync_mitigation_mode = "defensive"
-  enable_deletion_protection       = true
-  drop_invalid_header_fields       = true
-  access_logs {
-  bucket = var.access_logs_bucket
-  prefix  = "ecs-lb"
-  enabled = true
- }
 }
 
 ## ALB Target Group
