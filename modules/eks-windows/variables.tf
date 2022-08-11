@@ -122,7 +122,7 @@ variable "map_users" {
 
   default = [
     {
-      userarn  = "arn:aws:iam::123456789:user/USER"
+      userarn  = "arn:aws:iam::0123456789:user/USER"
       username = "momarcio"
       groups   = ["system:masters"]
     },
