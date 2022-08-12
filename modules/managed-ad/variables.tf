@@ -1,6 +1,6 @@
 variable "ds_managed_ad_directory_name" {
   type        = string
-  description = "The fully qualified name for the AWS Managed Microsoft AD directory, such as corp.example.com"
+  description = "The fully qualified domain name for the AWS Managed Microsoft AD directory, such as corp.example.com"
 }
 
 variable "ds_managed_ad_edition" {

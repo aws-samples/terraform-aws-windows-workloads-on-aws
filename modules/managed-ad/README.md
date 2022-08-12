@@ -9,7 +9,7 @@ Terraform module which manages AWS Microsoft Managed AD resources.
 
 ## Variables description
 
-- **ds_managed_ad_directory_name (string)**: Full Qualified Domain Name (FQDN) for the Managed AD. i.e. "corp.local"
+- **ds_managed_ad_directory_name (string)**: Fully Qualified Domain Name (FQDN) for the Managed AD. i.e. "corp.local"
 
 - **ds_managed_ad_short_name (string)**: Active Directory Forest NetBIOS name. i.e. "corp.local"
 
@@ -37,6 +37,6 @@ module "managed-ad" {
 
 - **ds_managed_ad_id**: AWS Microsoft Managed AD ID
 
-- **ds_managed_ad_ips**:? AWS Microsoft Managed AD DNS IPs
+- **ds_managed_ad_ips**: AWS Microsoft Managed AD DNS IPs
 
-- **managed_ad_password_secret_id**: Admin password is set as an entry on AWS Secrets Manager as _${var.ds_managed_ad_directory_name}_admin_
+- **managed_ad_password_secret_id**: Admin password is set as an entry on AWS Secrets Manager as _managed-ad-fqdn\_admin_
