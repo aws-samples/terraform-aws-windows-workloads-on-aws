@@ -17,6 +17,7 @@ locals {
     "com.amazonaws.us-east-1.ecr.api",
     "com.amazonaws.us-east-1.ecr.dkr"
   ]
+}
 
 locals {
   http_port    = 80
@@ -27,5 +28,4 @@ locals {
   all_ips_ipv6 = ["::/0"]
 }
 
-}
 
