@@ -1,6 +1,6 @@
 # Amazon ECS for Windows containers
 
-Terraform module which deploys an ECS cluster for Windows containers using EC2 Windows-based tasks. 
+Terraform module which deploys an ECS cluster for Windows containers using Fargate Windows-based tasks. 
 
 ## Providers
 
