@@ -8,7 +8,7 @@ variable "ds_managed_ad_edition" {
   default     = "Standard"
   description = "The AWS Managed Microsoft AD edition: Enterprise or Standard (default)"
   validation {
-    condition     = contains(["Enterprise", "Standard"], var.mad_edition)
+    condition     = contains(["Enterprise", "Standard"], var.ds_managed_ad_edition)
     error_message = "The edition value must be Enterprise or Standard."
   }
 }
