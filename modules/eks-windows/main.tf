@@ -400,10 +400,6 @@ EOF
     create_before_destroy = true
   }
 
-  # iam_instance_profile {
-  #   arn = aws_iam_instance_profile.eks_windows_workernode_instance_profile.arn
-  # }
-
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
