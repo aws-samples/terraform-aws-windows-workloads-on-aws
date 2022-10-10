@@ -9,6 +9,7 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+  profile = "terraform-bootcamp"
 }
 
 provider "kubernetes" {
@@ -84,7 +85,7 @@ data "aws_ami" "eks_optimized_ami" {
 
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Core-EKS_Optimized-*"]
+    values = ["Windows_Server-2019-English-Core-EKS_Optimized-${var.eks_cluster_version}-*"]
   }
 }
 
@@ -327,7 +328,39 @@ resource "aws_eks_node_group" "node_group_linux" {
   }
 }
 
-## Windows Node group
+## EKS Windows Node Group
+
+resource "aws_eks_node_group" "node_group_windows" {
+  cluster_name    = aws_eks_cluster.eks_windows.name
+  node_group_name = "windows-nodegroup"
+  node_role_arn   = aws_iam_role.eks_node_group_role_windows.arn
+  subnet_ids      = data.aws_subnets.private_subnets.ids
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_windows_node_group_role_attach, 
+    aws_launch_template.eks_windows_nodegroup_lt
+  ]
+
+  launch_template {
+    name = aws_launch_template.eks_windows_nodegroup_lt.name
+    version = aws_launch_template.eks_windows_nodegroup_lt.latest_version
+  }
+
+  scaling_config {
+    desired_size = 1
+    max_size     = 5
+    min_size     = 1
+  }
+
+  update_config {
+    max_unavailable = 2
+  }
+
+  tags = {
+    "name" = "eks-linux-node"
+  }
+}
+
+## Windows Launch template
 
 resource "aws_launch_template" "eks_windows_nodegroup_lt" {
   name                   = "eks_windows_nodegroup_lt"
@@ -367,9 +400,9 @@ EOF
     create_before_destroy = true
   }
 
-  iam_instance_profile {
-    arn = aws_iam_instance_profile.eks_windows_workernode_instance_profile.arn
-  }
+  # iam_instance_profile {
+  #   arn = aws_iam_instance_profile.eks_windows_workernode_instance_profile.arn
+  # }
 
   metadata_options {
     http_endpoint               = "enabled"
