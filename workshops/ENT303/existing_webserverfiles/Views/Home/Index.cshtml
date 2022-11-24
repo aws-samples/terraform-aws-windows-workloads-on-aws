@@ -1,0 +1,45 @@
+﻿@model CommunicationRig.Models.HomeIndexViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@if (Model.ShowSuccessBanner)
+{
+    <div class="jumbotron text-center">
+        <img src="~/Content/Success.png" alt="success image" />
+    </div>
+}
+
+<form class="form-inline text-center" style="background-color: #eeeeee; padding:10px;" action="/" method="post">
+    <div class="form-group">
+        <label for="nameInput">Engineer name</label>
+        @Html.TextBoxFor(x => x.Username, new { id = "nameInput", @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+    <label>Signal count: @Model.Signals.Count() | Server address: @Model.ServerAddress</label>
+</form>
+
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Signal</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var signal in Model.Signals)
+            {
+                <tr style="background-color: black; color: lightgreen; font-family: monospace;">
+                    <td>@signal.Username</td>
+                    <td>Sent</td>
+                    <td>@signal.Timestamp.ToShortDateString() @signal.Timestamp.ToLongTimeString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
