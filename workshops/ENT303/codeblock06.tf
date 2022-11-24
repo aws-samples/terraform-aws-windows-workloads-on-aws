@@ -1,4 +1,5 @@
 # Create a private key for use with EC2 instances
+
 resource "tls_private_key" "ec2_keypair_01" {
   algorithm = "RSA"
   rsa_bits  = 4096
