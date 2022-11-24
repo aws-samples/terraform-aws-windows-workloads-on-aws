@@ -88,6 +88,7 @@ data "aws_secretsmanager_secret_version" "mmad01" {
 # Create Microsoft Managed Active Directory
 resource "aws_directory_service_directory" "mmad01" {
   name     = "capcom.pdo.com"
+  
   password = jsondecode(data.aws_secretsmanager_secret_version.mmad01.secret_string)["password"]
   edition  = "Standard"
   type     = "MicrosoftAD"
