@@ -29,6 +29,3 @@ module "ec2-windows-docker-host-linux" {
   docker_host_instance_type = "m5.large"
 }
 ```
-## Outputs
-
-- **application_url**: URL to the AWS App Runner application 
