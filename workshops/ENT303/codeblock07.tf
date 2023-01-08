@@ -71,7 +71,7 @@ data "aws_ami" "windows2022" {
 resource "aws_launch_template" "websrv" {
   name                   = format("%s%s%s%s", var.CustomerCode, "ltp", var.EnvironmentCode, "websrv01")
   description            = "Launch Template for Windows IIS Web server Auto Scaling Group"
-  image_id               = data.aws_ami.windows2022.id
+  image_id               = ##CORRUPTED##
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.ec2_keypair_01.key_name
   vpc_security_group_ids = [aws_security_group.app01.id]
