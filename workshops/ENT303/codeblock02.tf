@@ -3,7 +3,7 @@ resource ##CORRUPT## "internet_gateway_01" {
   vpc_id = aws_vpc.vpc_01.id
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "igw", var.environment_code, "01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "igw", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "codeblock02"
 
@@ -18,7 +18,7 @@ resource "aws_subnet" "pub_subnet_01" {
   availability_zone = var.az_01
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "sbn", "pb", var.environment_code, "01")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "sbn", "pb", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -31,7 +31,7 @@ resource "aws_subnet" "pub_subnet_02" {
   availability_zone = var.az_02
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "sbn", "pb", var.environment_code, "02")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "sbn", "pb", var.EnvironmentCode, "02")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -44,7 +44,7 @@ resource "aws_subnet" "priv_subnet_01" {
   availability_zone = var.az_01
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "sbn", "pv", var.environment_code, "01")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "sbn", "pv", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "codeblock02r"
   }
@@ -57,7 +57,7 @@ resource "aws_subnet" "priv_subnet_02" {
   availability_zone = var.az_02
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "sbn", "pv", var.environment_code, "02")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "sbn", "pv", var.EnvironmentCode, "02")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -78,7 +78,7 @@ resource "aws_nat_gateway" "nat_gateway_01" {
   subnet_id     = aws_subnet.pub_subnet_01.id
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "ngw", var.environment_code, "01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "ngw", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -91,7 +91,7 @@ resource "aws_nat_gateway" "nat_gateway_02" {
   subnet_id     = aws_subnet.pub_subnet_02.id
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "ngw", var.environment_code, "02")
+    Name         = format("%s%s%s%s", var.CustomerCode, "ngw", var.EnvironmentCode, "02")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -109,7 +109,7 @@ resource "aws_route_table" "pub_01" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "rtt", "pb", var.environment_code, "01")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "rtt", "pb", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -135,7 +135,7 @@ resource "aws_route_table" "priv_01" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "rtt", "pv", var.environment_code, "01")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "rtt", "pv", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -150,7 +150,7 @@ resource "aws_route_table" "priv_02" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "rtt", "pv", var.environment_code, "02")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "rtt", "pv", var.EnvironmentCode, "02")
     resourcetype = "network"
     codeblock    = "codeblock02"
   }
@@ -178,7 +178,7 @@ resource "aws_route_table_association" "pv_04" {
 
 # Security Groups
 resource "aws_security_group" "web01" {
-  name        = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "web01")
+  name        = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "web01")
   description = "Web Security Group"
   vpc_id      = aws_vpc.vpc_01.id
 
@@ -209,14 +209,14 @@ resource "aws_security_group" "web01" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "web01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "web01")
     resourcetype = "security"
     codeblock    = "codeblock02"
   }
 }
 
 resource "aws_security_group" "app01" {
-  name        = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "app01")
+  name        = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "app01")
   description = " Application Security Group"
   vpc_id      = aws_vpc.vpc_01.id
 
@@ -239,14 +239,14 @@ resource "aws_security_group" "app01" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "app01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "app01")
     resourcetype = "security"
     codeblock    = "codeblock02"
   }
 }
 
 resource "aws_security_group" "dat01" {
-  name        = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "dat01")
+  name        = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "dat01")
   description = "data security group"
   vpc_id      = aws_vpc.vpc_01.id
 
@@ -269,7 +269,7 @@ resource "aws_security_group" "dat01" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "dat01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "dat01")
     resourcetype = "security"
     codeblock    = "codeblock02"
   }

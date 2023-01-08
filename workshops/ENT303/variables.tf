@@ -1,10 +1,10 @@
 # Naming Convention
-variable "customer_code" {
+variable "CustomerCode" {
   description = "3 or 4 letter unique identifier for a customer"
   type        = string
 }
 
-variable "environment_code" {
+variable "EnvironmentCode" {
   description = "2 character code to signify the workloads environment"
   type        = string
 }
@@ -31,24 +31,13 @@ variable "az_02" {
   type        = string
 }
 
-variable "az_03" {
-  description = "Availability Zone 3"
-  type        = string
-}
-
-# AMI ID
-variable "ami_id01" {
-  description = "AMI ID for Amazon provided Microsoft Windows Server 2022 base"
-  type        = string
-}
-
 # Tags
-variable "environment" {
+variable "EnvironmentTag" {
   description = "Environment name tag"
   type        = string
 }
 
-variable "customer" {
+variable "CustomerTag" {
 
   description = "Customer Name tag"
   type        = string

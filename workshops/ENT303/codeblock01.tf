@@ -1,7 +1,7 @@
 # Create a Resource Group for Terraform created instances
 
 resource "aws_resourcegroups_group" "pdo" {
-  name        = format("%s%s%s%s", var.customer_code, "rgg", var.environment_code, "pdo")
+  name        = format("%s%s%s%s", var.CustomerCode, "rgg", var.EnvironmentCode, "pdo")
   description = "Planetry Defence Organization environment resources"
 
   resource_query {
@@ -21,7 +21,7 @@ JSON
   }
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "rgg", var.environment_code, "pdo")
+    Name         = format("%s%s%s%s", var.CustomerCode, "rgg", var.EnvironmentCode, "pdo")
     resourcetype = "scaffold"
     codeblock    = "codeblock01"
   }

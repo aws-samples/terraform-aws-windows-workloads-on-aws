@@ -1,0 +1,400 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS Workshop - Use Terraform to Build Microsoft Infrastructure on AWS
+Parameters:
+  CustomerCode:
+    Type: String
+    Default: pdo
+    Description: 3 or 4 letter unique identifier for a customer used in tag values and resource names
+  EnvironmentCode:
+    Type: String
+    Default: pd
+    Description: 2 character code to signify the workloads environment used in tag values and resource names
+  VpcCidr:
+    Type: String
+    Default: "10.180"
+    Description: First 2 octets of VPC and subnet CIDR range
+  CustomerTag:
+    Type: String
+    Default: planentary defence organization
+    Description: Customer name tag value
+  EnvironmentTag:
+    Type: String
+    Default: production
+    Description: Customer environment tag value
+Resources:
+  pdovpcpd01:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Sub ${VpcCidr}.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}vpc${EnvironmentCode}01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+        - Key: resourcetype
+          Value: network
+  pdosbnpvpd03:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref pdovpcpd01
+      CidrBlock: !Sub ${VpcCidr}.5.0/24
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}sbnpv${EnvironmentCode}03
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdosbnpvpd04:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: {Ref: pdovpcpd01}
+      CidrBlock: !Sub ${VpcCidr}.6.0/24
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}sbnpv${EnvironmentCode}04
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: network
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdoscgpddat01:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${CustomerCode}scg${EnvironmentCode}dat01
+      GroupDescription: data security group
+      VpcId: {Ref: pdovpcpd01}
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}scg${EnvironmentCode}dat01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: network
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdosmspdmmad01:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub ${CustomerCode}sms${EnvironmentCode}mmad01
+      Description: Microsoft Managed AD domain administrator credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin","domain": "capcom"}'
+        GenerateStringKey: password
+        PasswordLength: 12
+        ExcludeCharacters: '"@/\'
+        RequireEachIncludedType: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}sms${EnvironmentCode}mmad01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: security
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdomadpd01:
+    Type: AWS::DirectoryService::MicrosoftAD
+    Properties:
+      Name: !Sub capcom.${CustomerCode}.com
+      Edition: Standard
+      Password: !Sub '{{resolve:secretsmanager:pdosmspdmmad01:SecretString:password}}'
+      VpcSettings:
+        SubnetIds:
+          - !Ref pdosbnpvpd03
+          - !Ref pdosbnpvpd04
+        VpcId: !Ref pdovpcpd01
+  pdoiarpdrdsauth01:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                  - rds.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess
+      Path: /
+      RoleName: !Sub ${CustomerCode}iar${EnvironmentCode}rdsauth01
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}iar${EnvironmentCode}rdsauth01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: security
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdosmspdrds01:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub ${CustomerCode}sms${EnvironmentCode}rds01
+      Description: RDS for SQL Server credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin","authentication": "SQL Server Authentication"}'
+        GenerateStringKey: password
+        PasswordLength: 12
+        ExcludeCharacters: '"@/\&<>;,[]{}()?*=!''`'
+        RequireEachIncludedType: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}sms${EnvironmentCode}rds01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: security
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdosbgpdrdsmssql01:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: DB Subnet group used by RDS for SQL Server
+      DBSubnetGroupName: !Sub ${CustomerCode}sbg${EnvironmentCode}rdsmssql01
+      SubnetIds: 
+        - !Ref pdosbnpvpd03
+        - !Ref pdosbnpvpd04
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}sbg${EnvironmentCode}rdsmssql01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: networking
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdordspdmssql01:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 30
+      AutoMinorVersionUpgrade: true
+      BackupRetentionPeriod: 1
+      DBInstanceClass: db.t3.xlarge
+      DBInstanceIdentifier: !Sub ${CustomerCode}mssql01
+      DBSubnetGroupName: !Ref pdosbgpdrdsmssql01
+      DeleteAutomatedBackups: true
+      DeletionProtection: true
+      Domain: !Ref pdomadpd01
+      DomainIAMRoleName: !Ref pdoiarpdrdsauth01
+      EnableCloudwatchLogsExports:
+        - error
+      EnablePerformanceInsights: true
+      Engine: sqlserver-ee
+      EngineVersion: 15.00.4236.7.v1
+      LicenseModel: license-included
+      MasterUsername: admin
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:pdosmspdrds01:SecretString:password}}'
+      MaxAllocatedStorage: 50
+      MultiAZ: true
+      PubliclyAccessible: false
+      StorageEncrypted: true
+      StorageType: gp2
+      VPCSecurityGroups:
+        - Ref: pdoscgpddat01
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}rds${EnvironmentCode}mssql01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: database
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdoiarpdcloud9admin01:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                  - ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess
+      Path: /
+      RoleName: !Sub ${CustomerCode}iar${EnvironmentCode}cloud9admin01
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}iar${EnvironmentCode}cloud9admin01
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: security
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdoiippdcloud9admin01:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      InstanceProfileName: !Sub ${CustomerCode}iip${EnvironmentCode}cloud9admin01
+      Roles: 
+        - !Sub ${CustomerCode}iar${EnvironmentCode}cloud9admin01
+  pdocl9dvtfma01:
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      AutomaticStopTimeMinutes: 180
+      Description: Terraform Development Environment
+      ImageId: amazonlinux-2-x86_64
+      InstanceType: t3.medium
+      Name: !Sub ${CustomerCode}_development_environment 
+      Repositories:
+          - RepositoryUrl: !GetAtt pdocdcdvtfm01.CloneUrlHttp
+            PathComponent: /my_release
+          - RepositoryUrl: https://github.com/aws-samples/terraform-aws-windows-workloads-on-aws.git
+            PathComponent: /code_library
+      Tags:
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: softwaredevelopment
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdocdcdvtfm01:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: !Sub ${CustomerCode}cdcdvtfm01
+      RepositoryDescription: Terraform Development Repository
+      Tags:
+        - Key: Provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: softwaredevelopment
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources
+  pdofsxpdmmadsingaz:
+    Type: 'AWS::FSx::FileSystem'
+    Properties:
+      FileSystemType: WINDOWS
+      StorageCapacity: 32
+      StorageType: SSD
+      SubnetIds:
+        - Ref: pdosbnpvpd03
+      SecurityGroupIds:
+       - Ref: pdoscgpddat01
+      WindowsConfiguration:
+        ActiveDirectoryId: 
+          Ref: pdomadpd01
+        ThroughputCapacity: 16
+        Aliases: 
+            - !Sub fsx.capcom.${CustomerCode}.com
+        WeeklyMaintenanceStartTime: '4:16:30'
+        DailyAutomaticBackupStartTime: '01:00'
+        AutomaticBackupRetentionDays: 0
+        DeploymentType: SINGLE_AZ_2
+        CopyTagsToBackups: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${CustomerCode}fsx${EnvironmentCode}mmadsingaz
+        - Key: provisioner
+          Value: CFN
+        - Key: workshop
+          Value: pdo
+        - Key: resourcetype
+          Value: storage
+        - Key: customer
+          Value: !Sub ${CustomerTag}
+        - Key: environment
+          Value: !Sub ${EnvironmentTag}
+        - Key: codeblock
+          Value: existing_resources

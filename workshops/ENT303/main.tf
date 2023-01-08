@@ -21,8 +21,8 @@ provider "aws" {
 
     tags = {
 
-      customer    = var.customer
-      environment = var.environment
+      customer    = var.CustomerTag
+      environment = var.EnvironmentTag
       provisioner = "terraform"
       workshop    = "pdo"
 

@@ -4,7 +4,7 @@ resource "aws_vpc_dhcp_options" "mmad01" {
   domain_name_servers = aws_directory_service_directory.mmad01.dns_ip_addresses
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "dhc", var.environment_code, "mmad", "01"),
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "dhc", var.EnvironmentCode, "mmad", "01"),
     resourcetype = "network"
     codeblock    = "codeblock07"
   }
@@ -17,7 +17,7 @@ resource "aws_vpc_dhcp_options_association" "mmad01" {
 
 # Windows Domain join SSM setup
 resource "aws_ssm_document" "domainjoin" {
-  name          = format("%s%s%s%s", var.customer_code, "ssm", var.environment_code, "domainjoin")
+  name          = format("%s%s%s%s", var.CustomerCode, "ssm", var.EnvironmentCode, "domainjoin")
   document_type = "Command"
   content = jsonencode(
     {
@@ -38,7 +38,7 @@ resource "aws_ssm_document" "domainjoin" {
   )
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "ssm", var.environment_code, "domainjoin")
+    Name         = format("%s%s%s%s", var.CustomerCode, "ssm", var.EnvironmentCode, "domainjoin")
     resourcetype = "identity"
     codeblock    = "codeblock07"
   }
@@ -57,11 +57,21 @@ resource "aws_iam_role_policy_attachment" "ssm-mmad" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess"
 }
 
+# AMI IDs for use with Amazon EC2
+data "aws_ami" "windows2022" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2022-English-Full-Base*"]
+  }
+}
+
 # LaunchTemplate
 resource "aws_launch_template" "websrv" {
-  name                   = format("%s%s%s%s", var.customer_code, "ltp", var.environment_code, "websrv01")
+  name                   = format("%s%s%s%s", var.CustomerCode, "ltp", var.EnvironmentCode, "websrv01")
   description            = "Launch Template for Windows IIS Web server Auto Scaling Group"
-  image_id               = "ami-04e0ebd20d57a72c1"
+  image_id               = data.aws_ami.windows2022.id
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.ec2_keypair_01.key_name
   vpc_security_group_ids = [aws_security_group.app01.id]
@@ -95,7 +105,7 @@ resource "aws_launch_template" "websrv" {
     resource_type = "instance"
 
     tags = {
-      Name         = format("%s%s%s%s", var.customer_code, "ec2", var.environment_code, "websrvasg")
+      Name         = format("%s%s%s%s", var.CustomerCode, "ec2", var.EnvironmentCode, "websrvasg")
       domainjoin   = "mmad"
       resourcetype = "compute"
       codeblock    = "codeblock07"

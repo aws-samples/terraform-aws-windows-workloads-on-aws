@@ -4,7 +4,7 @@ resource "aws_vpc" "vpc_01" {
   instance_tenancy = "default"
   
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "vpc", var.environment_code, "01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "vpc", var.EnvironmentCode, "01")
     resourcetype = "network"
     codeblock    = "existing_resources"
   }
@@ -17,7 +17,7 @@ resource "aws_subnet" "priv_subnet_03" {
   availability_zone = var.az_01
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "sbn", "pv", var.environment_code, "03")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "sbn", "pv", var.EnvironmentCode, "03")
     resourcetype = "network"
     codeblock    = "existing_resources"
   }
@@ -30,7 +30,7 @@ resource "aws_subnet" "priv_subnet_04" {
   availability_zone = var.az_02
 
   tags = {
-    Name         = format("%s%s%s%s%s", var.customer_code, "sbn", "pv", var.environment_code, "04")
+    Name         = format("%s%s%s%s%s", var.CustomerCode, "sbn", "pv", var.EnvironmentCode, "04")
     resourcetype = "network"
     codeblock    = "existing_resources"
   }
@@ -59,19 +59,19 @@ resource "aws_security_group" "dat01" {
   }
 
   tags = {
-    Name      = format("%s%s%s%s", var.customer_code, "scg", var.environment_code, "dat01")
+    Name      = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "dat01")
     rtype     = "security"
     codeblock = "network-3tier"
   }
 }
 # Create Microsoft Managed Active Directory Secrets Manager resources and import pre-created secrets
 resource "aws_secretsmanager_secret" "mmad01" {
-  name                    = format("%s%s%s%s", var.customer_code, "sms", var.environment_code, "mmad01")
+  name                    = format("%s%s%s%s", var.CustomerCode, "sms", var.EnvironmentCode, "mmad01")
   description             = "Microsoft Managed AD domain administrator credentials"
   recovery_window_in_days = 0
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "sms", var.environment_code, "mmad01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "sms", var.EnvironmentCode, "mmad01")
     resourcetype = "security"
     codeblock    = "existing_resources"
   }
@@ -99,7 +99,7 @@ resource "aws_directory_service_directory" "mmad01" {
   }
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "mmad", var.environment_code, "01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "mmad", var.EnvironmentCode, "01")
     resourcetype = "identity"
     codeblock    = "existing_resources"
   }
@@ -126,13 +126,13 @@ data "aws_iam_policy_document" "rdsassumerole" {
 }
 
 resource "aws_iam_role" "rdsadauth" {
-  name                  = format("%s%s%s%s", var.customer_code, "iar", var.environment_code, "rdsauth01")
+  name                  = format("%s%s%s%s", var.CustomerCode, "iar", var.EnvironmentCode, "rdsauth01")
   description           = "Role used by RDS for Active Directory authentication and authorization"
   force_detach_policies = true
   assume_role_policy    = data.aws_iam_policy_document.rdsassumerole.json
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "iar", var.environment_code, "rdsauth01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "iar", var.EnvironmentCode, "rdsauth01")
     resourcetype = "identity"
     codeblock    = "existing_resources"
   }
@@ -149,12 +149,12 @@ resource "aws_iam_role_policy_attachment" "rdsdirectoryservices" {
 
 # Create Amazon RDS for SQL Server Secrets Manager resources and import pre-created secrets
 resource "aws_secretsmanager_secret" "rdsmssql01" {
-  name                    = format("%s%s%s%s", var.customer_code, "sms", var.environment_code, "rds01")
+  name                    = format("%s%s%s%s", var.CustomerCode, "sms", var.EnvironmentCode, "rds01")
   description             = "RDS for SQL Server credentials"
   recovery_window_in_days = 0
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "sms", var.environment_code, "02")
+    Name         = format("%s%s%s%s", var.CustomerCode, "sms", var.EnvironmentCode, "02")
     resourcetype = "security"
     codeblock    = "existing_resources"
   }
@@ -170,12 +170,12 @@ data "aws_secretsmanager_secret_version" "rdsmssql01" {
 
 # Create DB Subnet Group for Amazon RDS for SQL Server
 resource "aws_db_subnet_group" "rdsmssql01" {
-  name        = format("%s%s%s%s", var.customer_code, "sbg", var.environment_code, "rdsmssql01")
+  name        = format("%s%s%s%s", var.CustomerCode, "sbg", var.EnvironmentCode, "rdsmssql01")
   description = "DB Subnet group used by RDS for SQL Server"
   subnet_ids  = [aws_subnet.priv_subnet_03.id, aws_subnet.priv_subnet_04.id]
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "sbg", var.environment_code, "rdsmssql01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "sbg", var.EnvironmentCode, "rdsmssql01")
     resourcetype = "network"
     codeblock    = "existing_resources"
   }
@@ -194,7 +194,7 @@ resource "aws_db_instance" "rdsmssql01" {
   max_allocated_storage                 = 50
   storage_encrypted                     = true
   apply_immediately                     = true
-  identifier                            = "mssql01"
+  identifier                            = format("%s%s", var.CustomerCode, "mssql01")
   username                              = "admin"
   password                              = jsondecode(data.aws_secretsmanager_secret_version.rdsmssql01.secret_string)["password"]
   port                                  = 1433
@@ -214,7 +214,7 @@ resource "aws_db_instance" "rdsmssql01" {
   enabled_cloudwatch_logs_exports       = ["error"]
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "rds", var.environment_code, "mssql01")
+    Name         = format("%s%s%s%s", var.CustomerCode, "rds", var.EnvironmentCode, "mssql01")
     resourcetype = "database"
     codeblock    = "existing_resources"
   }
@@ -241,7 +241,7 @@ resource "aws_fsx_windows_file_system" "mmad" {
   security_group_ids                = [aws_security_group.dat01.id]
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "fsx", var.environment_code, "mmadsingaz")
+    Name         = format("%s%s%s%s", var.CustomerCode, "fsx", var.EnvironmentCode, "mmadsingaz")
     resourcetype = "storage"
     codeblock    = "existing_resources"
   }

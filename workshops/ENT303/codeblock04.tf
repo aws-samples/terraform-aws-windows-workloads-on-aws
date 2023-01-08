@@ -1,7 +1,7 @@
 # Create IAM roles
 
 resource "aws_iam_role" "websrv" {
-  name        = format("%s%s%s%s", var.customer_code, "iar", var.environment_code, "websrv")
+  name        = format("%s%s%s%s", var.CustomerCode, "iar", var.EnvironmentCode, "websrv")
   description = "IAM role for webserver to access S3 hosted web files"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -17,14 +17,14 @@ resource "aws_iam_role" "websrv" {
   })
 
   tags = {
-    name         = format("%s%s%s%s", var.customer_code, "iar", var.environment_code, "websrv")
+    name         = format("%s%s%s%s", var.CustomerCode, "iar", var.EnvironmentCode, "websrv")
     resourcetype = "identity"
     codeblock    = "codeblock04"
   }
 }
 
 resource "aws_iam_role_policy" "websrvs3" {
-  name = format("%s%s%s%s", var.customer_code, "irp", var.environment_code, "websrvs3")
+  name = format("%s%s%s%s", var.CustomerCode, "irp", var.EnvironmentCode, "websrvs3")
   role = aws_iam_role.websrv.id
   policy = jsonencode({
     Version = "2012-10-17"
@@ -45,7 +45,7 @@ resource "aws_iam_role_policy" "websrvs3" {
 }
 
 resource "aws_iam_role_policy" "websrvs3ec2describe" {
-  name = format("%s%s%s%s", var.customer_code, "irp", var.environment_code, "websrvs3ec2describe")
+  name = format("%s%s%s%s", var.CustomerCode, "irp", var.EnvironmentCode, "websrvs3ec2describe")
   role = aws_iam_role.websrv.id
   policy = jsonencode({
     Version = "2012-10-17"
@@ -62,7 +62,7 @@ resource "aws_iam_role_policy" "websrvs3ec2describe" {
 }
 
 resource "aws_iam_role_policy" "websrvs3secrets" {
-  name = format("%s%s%s%s", var.customer_code, "irp", var.environment_code, "websrvs3secrets")
+  name = format("%s%s%s%s", var.CustomerCode, "irp", var.EnvironmentCode, "websrvs3secrets")
   role = aws_iam_role.websrv.id
   policy = jsonencode({
     Version = "2012-10-17"
@@ -89,11 +89,11 @@ resource "aws_iam_role_policy_attachment" "websrvmmad" {
 }
 
 resource "aws_iam_instance_profile" "websrv" {
-  name = format("%s%s%s%s", var.customer_code, "iap", var.environment_code, "websrv")
+  name = format("%s%s%s%s", var.CustomerCode, "iap", var.EnvironmentCode, "websrv")
   role = aws_iam_role.websrv.name
 
   tags = {
-    Name         = format("%s%s%s%s", var.customer_code, "iap", var.environment_code, "websrv")
+    Name         = format("%s%s%s%s", var.CustomerCode, "iap", var.EnvironmentCode, "websrv")
     resourcetype = "identity"
     codeblock    = "codeblock04"
   }
