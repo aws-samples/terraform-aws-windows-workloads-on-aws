@@ -61,7 +61,7 @@ resource "aws_security_group" "dat01" {
   tags = {
     Name      = format("%s%s%s%s", var.CustomerCode, "scg", var.EnvironmentCode, "dat01")
     rtype     = "security"
-    codeblock = "network-3tier"
+    codeblock = "existing_resources"
   }
 }
 # Create Microsoft Managed Active Directory Secrets Manager resources and import pre-created secrets
