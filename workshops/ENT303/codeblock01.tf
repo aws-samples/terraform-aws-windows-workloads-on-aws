@@ -13,7 +13,7 @@ resource "aws_resourcegroups_group" "pdo" {
   "TagFilters": [
     {
       "Key": "Customer",
-      "Values": ["${var.customer}"]
+      "Values": ["${var.CustomerTag}"]
     }
   ]
 }
