@@ -249,7 +249,7 @@ Resources:
       DBInstanceIdentifier: !Sub ${CustomerCode}mssql01
       DBSubnetGroupName: !Ref pdosbgpdrdsmssql01
       DeleteAutomatedBackups: true
-      DeletionProtection: true
+      DeletionProtection: false
       Domain: !Ref pdomadpd01
       DomainIAMRoleName: !Ref pdoiarpdrdsauth01
       EnableCloudwatchLogsExports:

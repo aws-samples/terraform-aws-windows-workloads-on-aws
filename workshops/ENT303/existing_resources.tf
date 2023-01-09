@@ -206,7 +206,7 @@ resource "aws_db_instance" "rdsmssql01" {
   backup_retention_period               = 1
   delete_automated_backups              = true
   skip_final_snapshot                   = true
-  deletion_protection                   = true
+  deletion_protection                   = false
   copy_tags_to_snapshot                 = false
   publicly_accessible                   = false
   performance_insights_enabled          = true
