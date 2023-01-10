@@ -61,6 +61,8 @@ Resources:
           Value: CFN
         - Key: workshop
           Value: pdo
+        - Key: resourcetype
+          Value: network
         - Key: customer
           Value: !Sub ${CustomerTag}
         - Key: environment
