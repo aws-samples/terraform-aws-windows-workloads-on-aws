@@ -1,5 +1,5 @@
 # Workshop: Use Terraform to Build Microsoft Infrastructure on AWS (3 hours)
-This code is used within the [Use Terraform to build Microsoft infrastructure on AWS](https://studio.us-east-1.prod.workshops.aws/workshops/e5122482-ded0-4259-94f0-c373f23c5257)workshop.
+This code is used within the [Use Terraform to build Microsoft infrastructure on AWS](https://catalog.workshops.aws/pdo-01) workshop.
 
 In this workshop, explore how to use Terraform to deploy services such as Amazon EC2 for Windows Server, AWS Managed Microsoft Active Directory, Amazon FSx for Windows File Server, and Amazon RDS for SQL Server. Learn from best practices for how to use Terraform to create fully functioning, well-architected AWS solutions in a quick and repeatable manner.
 
