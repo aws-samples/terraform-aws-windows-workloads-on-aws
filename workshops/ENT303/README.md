@@ -9,7 +9,7 @@ In this workshop, explore how to use Terraform to deploy services such as Amazon
 
 ## Variables description
 - **CustomerCode (string)**: 3 or 4 letter unique identifier for a customer
-- **RnvironmentCode (string)**: 2 character code to signify the workloads environment
+- **EnvironmentCode (string)**: 2 character code to signify the workloads environment
 - **vpc_cidr (string)**: VPC CIDR range
 - **region (string)**: AWS region
 - **az_01 (string)**: Availability Zone 1
