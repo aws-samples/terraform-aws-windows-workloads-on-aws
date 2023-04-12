@@ -173,15 +173,6 @@ resource "aws_iam_role" "eks_iam_role_cluster_service" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "eks_iam_role_cluster_service_attach" {
-  for_each = toset([
-    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  ])
-  role       = aws_iam_role.eks_iam_role_cluster_service.name
-  policy_arn = each.value
-}
-
 ### EKS Linux Node Group - Role
 resource "aws_iam_role" "eks_node_group_role_linux" {
   name = "eks-node-group-linux-role"
