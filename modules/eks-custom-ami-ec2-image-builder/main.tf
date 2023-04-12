@@ -170,7 +170,7 @@ resource "aws_imagebuilder_infrastructure_configuration" "custom_windows_ami_inf
 }
 
 resource "aws_imagebuilder_distribution_configuration" "custom_windows_ami_distribution" {
-  name        = var.custom_windows_ami_distribution_name
+  name        = "EKS Custom Windows optimized AMI"
   description = "EC2 Image Builder Distribution for Amazon EKS Windows custom AMIs"
 
   distribution {
@@ -185,7 +185,7 @@ resource "aws_imagebuilder_distribution_configuration" "custom_windows_ami_distr
     }
     ami_distribution_configuration {
       ami_tags = {
-        "Orchestrator" = var.orchestrator
+        "Orchestrator" = "Amazon EKS"
       }
     }
   }

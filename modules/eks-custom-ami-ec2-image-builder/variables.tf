@@ -1,9 +1,3 @@
-variable "orchestrator" {
-  type        = string
-  default     = "eks"
-  description = "Change to 'ecs' if building a custom ECS Optimized AMI"
-}
-
 variable "eks_cluster_version" {
   type        = string
   default     = "1.25"
@@ -38,13 +32,6 @@ variable "component_name_image_cache" {
 variable "image_pipeline_timezone" {
   default     = "America/Los_Angeles"
   description = "Change timezone - IANA timezone format "
-}
-
-variable "custom_windows_ami_distribution_name" {
-  type        = string
-  default     = "Custom Windows AMI - Distribution"
-  description = "Name of the Distribution point"
-
 }
 
 variable "fast_launch_max_parallel_launches" {
