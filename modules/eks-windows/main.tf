@@ -346,7 +346,7 @@ resource "aws_eks_node_group" "node_group_windows" {
   }
 
   tags = {
-    "name" = "eks-linux-node"
+    "name" = "eks-windows-node"
   }
 }
 
