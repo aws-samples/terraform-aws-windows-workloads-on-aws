@@ -4,7 +4,7 @@ Parameters:
   CustomerCode:
     Type: String
     Default: pdo
-    Description: 3 or 4 letter unique identifier for a customer used in tag values and resource names
+    Description: DO NOT CHANGE 3 or 4 letter unique identifier for a customer used in tag values and resource names
   EnvironmentCode:
     Type: String
     Default: pd
