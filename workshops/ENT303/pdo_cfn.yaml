@@ -320,6 +320,8 @@ Resources:
       InstanceProfileName: !Sub ${CustomerCode}iip${EnvironmentCode}cloud9admin01
       Roles: 
         - !Sub ${CustomerCode}iar${EnvironmentCode}cloud9admin01
+    DependsOn:
+      - pdoiarpdcloud9admin01
   pdocl9dvtfma01:
     Type: AWS::Cloud9::EnvironmentEC2
     Properties:
