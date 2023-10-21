@@ -256,7 +256,7 @@ Resources:
       EngineVersion: 15.00.4236.7.v1
       LicenseModel: license-included
       MasterUsername: admin
-      MasterUserPassword: !Sub "{{resolve:secretsmanager:${CustomerCode}sbg${EnvironmentCode}rdsmssql01:SecretString:password}}"
+      MasterUserPassword: !Sub "{{resolve:secretsmanager:${CustomerCode}sms${EnvironmentCode}rds01:SecretString:password}}"
       MaxAllocatedStorage: 50
       MultiAZ: true
       PubliclyAccessible: false
