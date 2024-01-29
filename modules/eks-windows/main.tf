@@ -7,11 +7,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  region  = "us-east-1"
-  profile = "msft_python_automation"
-}
-
 module "vpc" {
   source = "../vpc"
 }
