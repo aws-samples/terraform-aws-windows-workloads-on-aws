@@ -2,13 +2,18 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
+  profile = "msft_python_automation"
+}
+
+module "vpc" {
+  source = "../vpc"
 }
 
 provider "kubernetes" {
@@ -17,14 +22,10 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.eks_windows_cluster_data.token
 }
 
-## Data
+### Data
 
 data "aws_eks_cluster" "eks_windows_cluster_ca" {
   name = aws_eks_cluster.eks_windows.name
-}
-
-output "kubeconfig-certificate-authority-data" {
-  value = data.aws_eks_cluster.eks_windows_cluster_data.certificate_authority[0].data
 }
 
 
@@ -34,26 +35,6 @@ data "aws_eks_cluster" "eks_windows_cluster_data" {
 
 data "aws_eks_cluster_auth" "eks_windows_cluster_data" {
   name = aws_eks_cluster.eks_windows.name
-}
-
-data "aws_vpc" "vpc_id" {
-  filter {
-    name   = "tag:Name"
-    values = ["VPC"]
-  }
-  lifecycle {
-    postcondition {
-      condition     = self.enable_dns_support == true
-      error_message = "The selected VPC must have DNS support enabled."
-    }
-  }
-}
-
-data "aws_subnets" "private_subnets" {
-  filter {
-    name   = "tag:Tier"
-    values = ["Private"]
-  }
 }
 
 data "tls_certificate" "eks_windows_cluster_tls" {
@@ -84,7 +65,7 @@ data "aws_ami" "eks_optimized_ami" {
 
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Core-EKS_Optimized-${var.eks_cluster_version}-*"]
+    values = ["Windows_Server-2022-English-Core-EKS_Optimized-*"]
   }
 }
 
@@ -94,18 +75,18 @@ output "account_id" {
   value = data.aws_caller_identity.account_id.account_id
 }
 
-## Security Group
+### Security Group
 
 resource "aws_security_group" "cluster_sg" {
   name        = "cluster_sg"
   description = "Allow TLS inbound traffic"
-  vpc_id      = data.aws_vpc.vpc_id.id
+  vpc_id = module.vpc.vpc_id
 }
 
 resource "aws_security_group" "windows_sg" {
   name        = "windows_sg"
   description = "Allow TLS inbound traffic"
-  vpc_id      = data.aws_vpc.vpc_id.id
+  vpc_id = module.vpc.vpc_id
 
   egress {
     from_port   = 0
@@ -133,7 +114,7 @@ resource "aws_security_group_rule" "rule_control_plane" {
   source_security_group_id = aws_security_group.windows_sg.id
 }
 
-## ECS IAM Roles and Instance Roles
+### ECS IAM Roles and Instance Roles
 
 resource "aws_iam_openid_connect_provider" "eks_iam_openid" {
   client_id_list  = ["sts.amazonaws.com"]
@@ -141,7 +122,7 @@ resource "aws_iam_openid_connect_provider" "eks_iam_openid" {
   url             = aws_eks_cluster.eks_windows.identity[0].oidc[0].issuer
 }
 
-### EKS VPC CNI Role
+#### EKS VPC CNI Role
 
 resource "aws_iam_role" "eks_vpc_cni_role" {
   assume_role_policy = data.aws_iam_policy_document.eks_windows_assume_role_policy.json
@@ -153,7 +134,7 @@ resource "aws_iam_role_policy_attachment" "eks_iam_role_attach_AmazonEKS_CNI_Pol
   role       = aws_iam_role.eks_vpc_cni_role.name
 }
 
-### EKS Cluster - Role
+#### EKS Cluster - Role
 
 resource "aws_iam_role" "eks_iam_role_cluster_service" {
   name = "eks-cluster-service-role"
@@ -173,7 +154,16 @@ resource "aws_iam_role" "eks_iam_role_cluster_service" {
   })
 }
 
-### EKS Linux Node Group - Role
+resource "aws_iam_role_policy_attachment" "eks_iam_role_cluster_service_attach" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  ])
+  role       = aws_iam_role.eks_iam_role_cluster_service.name
+  policy_arn = each.value
+}
+
+#### EKS Linux Node Group - Role
 resource "aws_iam_role" "eks_node_group_role_linux" {
   name = "eks-node-group-linux-role"
 
@@ -200,7 +190,7 @@ resource "aws_iam_role_policy_attachment" "eks_linux_node_group_role_attach" {
   policy_arn = each.value
 }
 
-### EKS Windows Node Group - Role
+#### EKS Windows Node Group - Role
 resource "aws_iam_role" "eks_node_group_role_windows" {
   name = "eks-node-group-windows-role"
 
@@ -232,7 +222,7 @@ resource "aws_iam_instance_profile" "eks_windows_workernode_instance_profile" {
   role = aws_iam_role.eks_node_group_role_windows.name
 }
 
-## EKS Cluster
+### EKS Cluster
 
 resource "aws_eks_cluster" "eks_windows" {
   name     = var.eks_cluster_name
@@ -240,20 +230,13 @@ resource "aws_eks_cluster" "eks_windows" {
   version  = var.eks_cluster_version
 
   vpc_config {
-    subnet_ids = data.aws_subnets.private_subnets.ids
+    subnet_ids = module.vpc.private_subnets_id
   }
 }
 
-## EKS Cluster Addon
+#### Enable VPC CNI Windows Support and Prefix Delegation
 
-resource "aws_eks_addon" "eks_windows_addon" {
-  cluster_name = aws_eks_cluster.eks_windows.name
-  addon_name   = "vpc-cni"
-}
-
-## Enable VPC CNI Windows Support
-
-resource "kubernetes_config_map" "amazon_vpc_cni_windows" {
+resource "kubernetes_config_map_v1_data" "amazon_vpc_cni_windows" {
   depends_on = [
     aws_eks_cluster.eks_windows
   ]
@@ -264,10 +247,13 @@ resource "kubernetes_config_map" "amazon_vpc_cni_windows" {
 
   data = {
     enable-windows-ipam : "true"
+    enable-windows-prefix-delegation : "true"
   }
+
+  force = "true"
 }
 
-## AWS CONFIGMAP
+### AWS CONFIGMAP
 
 resource "kubernetes_config_map" "configmap" {
   data = {
@@ -292,13 +278,13 @@ EOT
   }
 }
 
-## EKS Linux Node Group
+### EKS Linux Node Group
 
 resource "aws_eks_node_group" "node_group_linux" {
   cluster_name    = aws_eks_cluster.eks_windows.name
-  node_group_name = "linux-nodegroup"
+  node_group_name = "linux-managed-nodegroup"
   node_role_arn   = aws_iam_role.eks_node_group_role_linux.arn
-  subnet_ids      = data.aws_subnets.private_subnets.ids
+  subnet_ids      = module.vpc.private_subnets_id
   depends_on = [
     aws_iam_role_policy_attachment.eks_linux_node_group_role_attach
   ]
@@ -318,21 +304,23 @@ resource "aws_eks_node_group" "node_group_linux" {
   }
 }
 
-## EKS Windows Node Group
+### EKS Windows Node Group
 
 resource "aws_eks_node_group" "node_group_windows" {
   cluster_name    = aws_eks_cluster.eks_windows.name
-  node_group_name = "windows-nodegroup"
+  node_group_name = "windows-managed-nodegroup"
   node_role_arn   = aws_iam_role.eks_node_group_role_windows.arn
-  subnet_ids      = data.aws_subnets.private_subnets.ids
+  ami_type        = var.eks_windows_ami_version
+  instance_types  = [var.ec2_instance_types]
+  subnet_ids      = module.vpc.private_subnets_id
   depends_on = [
-    aws_iam_role_policy_attachment.eks_windows_node_group_role_attach, 
-    aws_launch_template.eks_windows_nodegroup_lt
+    aws_iam_role_policy_attachment.eks_windows_node_group_role_attach
   ]
 
-  launch_template {
-    name = aws_launch_template.eks_windows_nodegroup_lt.name
-    version = aws_launch_template.eks_windows_nodegroup_lt.latest_version
+  taint {
+    key = "windows"
+    value = "os"
+    effect = "NO_SCHEDULE"
   }
 
   scaling_config {
@@ -347,77 +335,5 @@ resource "aws_eks_node_group" "node_group_windows" {
 
   tags = {
     "name" = "eks-windows-node"
-  }
-}
-
-## Windows Launch template
-
-resource "aws_launch_template" "eks_windows_nodegroup_lt" {
-  name                   = "eks_windows_nodegroup_lt"
-  vpc_security_group_ids = [aws_security_group.windows_sg.id, aws_security_group.cluster_sg.id]
-  image_id               = data.aws_ami.eks_optimized_ami.id
-  instance_type          = "t3.large"
-
-  user_data = "${base64encode(<<EOF
-<powershell>
-[string]$EKSBinDir = "$env:ProgramFiles\Amazon\EKS"
-[string]$EKSBootstrapScriptFile = "$env:ProgramFiles\Amazon\EKS\Start-EKSBootstrap.ps1"
-& $EKSBootstrapScriptFile -EKSClusterName "${aws_eks_cluster.eks_windows.name}" -APIServerEndpoint "${aws_eks_cluster.eks_windows.endpoint}" -Base64ClusterCA "${data.aws_eks_cluster.eks_windows_cluster_data.certificate_authority[0].data}" -DNSClusterIP "10.100.0.10" 3>&1 4>&1 5>&1 6>&1
-</powershell>
-
-EOF
-  )}"
-
-  monitoring {
-    enabled = false
-  }
-
-  block_device_mappings {
-    device_name = "/dev/sda1"
-    ebs {
-      volume_size           = "50"
-      delete_on_termination = true
-      volume_type           = "gp3"
-    }
-  }
-
-  tag_specifications {
-    resource_type = "instance"
-    tags          = { "kubernetes.io/cluster/${aws_eks_cluster.eks_windows.name}" = "owned", "kubernetes.io/os" = "windows", "name" = "eks-windows-node" }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 2
-  }
-  depends_on = [
-    aws_eks_cluster.eks_windows
-  ]
-}
-
-## Auto Scaling group
-
-resource "aws_autoscaling_group" "eks-windows-nodegroup-asg" {
-
-  name             = "Windows_worker_nodes_asg"
-  desired_capacity = 1
-  max_size         = 5
-  min_size         = 1
-  #target_group_arns = [var.external_alb_target_group_arn]
-  launch_template {
-    id      = aws_launch_template.eks_windows_nodegroup_lt.id
-    version = "$Latest"
-  }
-  vpc_zone_identifier = data.aws_subnets.private_subnets.ids
-  health_check_type   = "EC2"
-
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [desired_capacity, target_group_arns]
   }
 }
