@@ -73,8 +73,14 @@ variable "cluster_encryption_config_resources" {
 
 variable "eks_cluster_version" {
   type        = string
-  default     = "1.22"
+  default     = "1.28"
   description = "Version for the EKS cluster"
+}
+
+variable "eks_windows_ami_version" {
+  type        = string
+  default     = "WINDOWS_CORE_2022_x86_64"
+  description = "Valid Values: AL2_x86_64 | AL2_x86_64_GPU | AL2_ARM_64 | CUSTOM | BOTTLEROCKET_ARM_64 | BOTTLEROCKET_x86_64 | BOTTLEROCKET_ARM_64_NVIDIA | BOTTLEROCKET_x86_64_NVIDIA | WINDOWS_CORE_2019_x86_64 | WINDOWS_FULL_2019_x86_64 | WINDOWS_CORE_2022_x86_64 | WINDOWS_FULL_2022_x86_64"
 }
 
 variable "launch_template_name" {
