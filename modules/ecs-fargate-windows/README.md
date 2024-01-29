@@ -34,4 +34,4 @@ module "ecs-windows" {
 ```
 ## Outputs
 
-- **alb_security_group_id**: Security group ID
+- **aws_lb.ecs_alb.dns_name**: ALB DNS Name
