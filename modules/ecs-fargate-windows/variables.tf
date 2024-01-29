@@ -19,11 +19,6 @@ variable "alb_ingress_name" {
   default = "ECS - Application Load Balancer - Ingress"
 }
 
-variable "ecs_fargate_task_name" {
-  type    = string
-  default = "iis_fargate"
-}
-
 variable "alb_ingress_ports" {
   type        = list(number)
   description = "List of ports opened from Internet to ALB"
@@ -51,14 +46,14 @@ variable "fargate_task_definition_memory" {
 
 variable "fargate_task_definition_image" {
   type    = string
-  default = "mcr.microsoft.com/windows/servercore/iis:latest"
+  default = "mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2022"
 }
 
 ## ECS Service
 
 variable "ecs_service_name" {
   type    = string
-  default = "ecs_service_windows"
+  default = "fargate-windows-2022-iis"
 }
 
 variable "desired_task_count" {
@@ -70,13 +65,13 @@ variable "desired_task_count" {
 
 variable "alb_name" {
   type    = string
-  default = "ecs-alb"
+  default = "fargate-windows-2022-iis-alb"
 }
 
 ## ALB Target Group
 
 variable "alb_target_group_name" {
   type        = string
-  default     = "ecs-alb-target-group"
+  default     = "fargate-iis-target-group"
   description = "Only alphanumeric characters and hyphens allowed in name"
 }

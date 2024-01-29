@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -15,7 +15,7 @@ provider "aws" {
 data "aws_vpc" "vpc_id" {
   filter {
     name   = "tag:Name"
-    values = ["VPC"]
+    values = ["Sample VPC for Windows workloads on AWS"]
   }
   lifecycle {
     postcondition {
@@ -99,7 +99,7 @@ resource "aws_security_group" "alb_ingress" {
 }
 
 resource "aws_security_group" "ecs_fargate_task_ingress" {
-  name        = var.ecs_fargate_task_name
+  name        = "Security Group for ECS Fargate Windows task"
   description = "Ingress traffic from ALB to Fargate task"
   vpc_id      = data.aws_vpc.vpc_id.id
 
@@ -144,7 +144,7 @@ resource "aws_ecs_task_definition" "fargate_task_definition_iis" {
   )
 
   runtime_platform {
-    operating_system_family = "WINDOWS_SERVER_2019_CORE"
+    operating_system_family = "WINDOWS_SERVER_2022_CORE"
     cpu_architecture        = "X86_64"
   }
 }

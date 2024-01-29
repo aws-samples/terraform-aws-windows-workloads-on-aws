@@ -1,5 +1,5 @@
 ##  Security Group ID
 
-output "alb_security_group_id" {
-  value = aws_security_group.alb_ingress.id
+output "alb_url" {
+  value = aws_lb.ecs_alb.dns_name
 }

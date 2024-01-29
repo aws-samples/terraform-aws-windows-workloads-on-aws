@@ -1,10 +1,10 @@
 # Amazon ECS for Windows containers
 
-Terraform module which deploys an ECS cluster for Windows containers using Fargate Windows-based tasks. 
+Terraform module, which deploys an ECS cluster for Windows containers using Fargate Windows-based tasks. It is required to wait until Fargate tasks reach Running status before accessing the ALB DNS Name output.
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 - **ecs_windows_cluster_name (string)**: ECS Cluster name
@@ -27,8 +27,8 @@ Terraform module which deploys an ECS cluster for Windows containers using Farga
 module "ecs-windows" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/ecs-fargate-windows"
 
-  alb_name           = "ecs-alb"
-  ecs_service_name   = "ecs_service_windows"
+  alb_name           = "fargate-windows-2022-iis-alb"
+  ecs_service_name   = "fargate-windows-2022-iis"
   desired_task_count = 2
 }
 ```
