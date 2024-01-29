@@ -4,7 +4,7 @@ Terraform module which deploys an EKS cluster for Windows containers.
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 - **eks_cluster_name (string)**: Namne of the EKS cluster
@@ -36,7 +36,7 @@ module "eks-windows" {
   source  = "aws-samples/windows-workloads-on-aws/aws//modules/eks-windows"
 
   eks_cluster_name    = "eks-windows"
-  eks_cluster_version = "1.22"
+  eks_cluster_version = "1.29"
   ec2_instance_types  = "t3.medium"
 }
 ```
