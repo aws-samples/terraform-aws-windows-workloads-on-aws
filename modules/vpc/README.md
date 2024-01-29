@@ -4,7 +4,7 @@ Terraform module which deploys a VPC with private and public subnets, internet g
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 - **vpc_cidr_block (string)**: The IPv4 CIDR block for the VPC

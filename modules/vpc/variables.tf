@@ -24,17 +24,3 @@ variable "public_subnets" {
   }
   description = "Map of AZ to a number that should be used for public subnets"
 }
-
-
-
-# locals {
-#   availability_zone = slice(data.aws_availability_zones.az.names, 0, 1)
-# }
-
-# locals {
-#   availability_zone = slice(data.aws_availability_zones.az.names, 0, 1)
-# }
-
-# locals {
-#   value = join(",", slice(data.aws_availability_zones.az.names, 0, 2))
-# }

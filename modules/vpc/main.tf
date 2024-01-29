@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -28,7 +28,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name = "VPC"
+    Name = "Sample VPC for Windows workloads on AWS"
   }
 }
 
@@ -70,7 +70,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 ## Elastic IP for Nat Gateway
 
 resource "aws_eip" "eip_natgateway" {
-  vpc        = true
+  domain        = "vpc"
   depends_on = [aws_internet_gateway.internet_gateway]
   tags = {
     Name = "Elastic IP for Nat Gateway"
