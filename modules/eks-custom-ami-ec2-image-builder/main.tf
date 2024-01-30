@@ -2,13 +2,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
 
 provider "aws" {
-  region  = var.region
+  region  = "us-east-1"
 }
 
 ## Data
@@ -18,7 +18,7 @@ data "aws_ami" "eks_optimized_ami" {
 
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Core-EKS_Optimized-${var.eks_cluster_version}-*"]
+    values = ["Windows_Server-2022-English-Core-EKS_Optimized-${var.eks_cluster_version}-*"]
   }
 }
 
@@ -27,7 +27,7 @@ data "aws_ami" "eks_optimized_ami" {
 data "aws_vpc" "vpc_id" {
   filter {
     name   = "tag:Name"
-    values = ["VPC"]
+    values = ["Sample VPC for Windows workloads on AWS"]
   }
   lifecycle {
     postcondition {
@@ -146,9 +146,7 @@ resource "aws_imagebuilder_component" "container_images" {
         inputs = {
           commands = [
             "Set-ExecutionPolicy Unrestricted -Force",
-            "ctr -n k8s.io image pull mcr.microsoft.com/windows/servercore:ltsc2019",
-            "ctr -n k8s.io image pull mcr.microsoft.com/dotnet/framework/aspnet:4.8",
-            "ctr -n k8s.io image pull mcr.microsoft.com/dotnet/framework/runtime:4.8"
+            "ctr -n k8s.io image pull mcr.microsoft.com/dotnet/framework/aspnet:4.8" ## Add necessary images uri per line
           ]
         }
         name = "containerdpull"
