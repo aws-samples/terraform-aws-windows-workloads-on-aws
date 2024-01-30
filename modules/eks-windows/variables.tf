@@ -73,7 +73,7 @@ variable "cluster_encryption_config_resources" {
 
 variable "eks_cluster_version" {
   type        = string
-  default     = "1.28"
+  default     = "1.29"
   description = "Version for the EKS cluster"
 }
 

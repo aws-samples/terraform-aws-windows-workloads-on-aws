@@ -7,8 +7,9 @@ terraform {
   }
 }
 
-module "vpc" {
-  source = "../vpc"
+provider "aws" {
+  region  = "us-east-1"
+  profile = "msft_python_automation"
 }
 
 provider "kubernetes" {
@@ -18,6 +19,33 @@ provider "kubernetes" {
 }
 
 ### Data
+
+data "aws_vpc" "vpc_id" {
+  filter {
+    name   = "tag:Name"
+    values = ["Sample VPC for Windows workloads on AWS"]
+  }
+  lifecycle {
+    postcondition {
+      condition     = self.enable_dns_support == true
+      error_message = "The selected VPC must have DNS support enabled."
+    }
+  }
+}
+
+data "aws_subnets" "private_subnets" {
+  filter {
+    name   = "tag:Tier"
+    values = ["Private"]
+  }
+}
+
+data "aws_subnets" "public_subnets" {
+  filter {
+    name   = "tag:Tier"
+    values = ["Public"]
+  }
+}
 
 data "aws_eks_cluster" "eks_windows_cluster_ca" {
   name = aws_eks_cluster.eks_windows.name
@@ -75,13 +103,13 @@ output "account_id" {
 resource "aws_security_group" "cluster_sg" {
   name        = "cluster_sg"
   description = "Allow TLS inbound traffic"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = data.aws_vpc.vpc_id.id
 }
 
 resource "aws_security_group" "windows_sg" {
   name        = "windows_sg"
   description = "Allow TLS inbound traffic"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = data.aws_vpc.vpc_id.id
 
   egress {
     from_port   = 0
@@ -225,7 +253,7 @@ resource "aws_eks_cluster" "eks_windows" {
   version  = var.eks_cluster_version
 
   vpc_config {
-    subnet_ids = module.vpc.private_subnets_id
+    subnet_ids = data.aws_subnets.private_subnets.ids
   }
 }
 
@@ -279,7 +307,7 @@ resource "aws_eks_node_group" "node_group_linux" {
   cluster_name    = aws_eks_cluster.eks_windows.name
   node_group_name = "linux-managed-nodegroup"
   node_role_arn   = aws_iam_role.eks_node_group_role_linux.arn
-  subnet_ids      = module.vpc.private_subnets_id
+  subnet_ids      = data.aws_subnets.private_subnets.ids
   depends_on = [
     aws_iam_role_policy_attachment.eks_linux_node_group_role_attach
   ]
@@ -307,7 +335,7 @@ resource "aws_eks_node_group" "node_group_windows" {
   node_role_arn   = aws_iam_role.eks_node_group_role_windows.arn
   ami_type        = var.eks_windows_ami_version
   instance_types  = [var.ec2_instance_types]
-  subnet_ids      = module.vpc.private_subnets_id
+  subnet_ids      = data.aws_subnets.private_subnets.ids
   depends_on = [
     aws_iam_role_policy_attachment.eks_windows_node_group_role_attach
   ]
