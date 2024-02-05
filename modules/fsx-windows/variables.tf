@@ -46,18 +46,37 @@ variable "storage_type" {
   }
 }
 
-variable "subnet_ids" {
-  type        = list(string)
-  description = "Private subnet ID(s) for the Amazon FSx for Windows"
-}
-
 variable "throughput_capacity" {
   type        = number
   default     = 16
   description = "Throughput (megabytes per second) of the file system in power of 2 increments. Minimum of 8 and maximum of 2048"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID for the Amazon FSx for Windows"
+variable "tcp_amazon_fsx_ingress_ports" {
+  type = list(number)
+  default = [
+    "53",
+    "88",
+    "464",
+    "389",
+    "123",
+    "135",
+    "445",
+    "636",
+    "3268",
+    "3269",
+    "5985",
+  "9389"]
+  description = "List of security group TCP ports for Amazon FSx Windows"
+}
+
+variable "udp_amazon_fsx_ingress_ports" {
+  type = list(number)
+  default = [
+    "88",
+    "464",
+    "389",
+    "123",
+  ]
+  description = "List of security UDP group ports for Amazon FSx Windows"
 }
