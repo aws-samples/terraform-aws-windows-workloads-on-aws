@@ -15,21 +15,11 @@ variable "ds_managed_ad_edition" {
 
 variable "ds_managed_ad_secret_key" {
   type        = string
-  default     = "aws/secretsmanager"
+  default     = ""
   description = "ARN or Id of the AWS KMS key to be used to encrypt the secret values in the versions stored in this secret"
 }
 
 variable "ds_managed_ad_short_name" {
   type        = string
   description = "The NetBIOS name for the AWS Managed Microsoft AD directory, such as CORP"
-}
-
-variable "ds_managed_ad_subnet_ids" {
-  type        = list(string)
-  description = "Two private subnet IDs for the AWS Managed Microsoft AD"
-}
-
-variable "ds_managed_ad_vpc_id" {
-  type        = string
-  description = "VPC ID for the AWS Managed Microsoft AD"
 }

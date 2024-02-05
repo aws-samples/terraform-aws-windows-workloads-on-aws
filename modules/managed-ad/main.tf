@@ -4,12 +4,36 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.3.0"
+      version = "~> 3.6.0"
     }
+  }
+}
+
+provider "aws" {
+  region  = "us-east-1"
+}
+
+data "aws_vpc" "vpc_id" {
+  filter {
+    name   = "tag:Name"
+    values = ["Sample VPC for Windows workloads on AWS"]
+  }
+  lifecycle {
+    postcondition {
+      condition     = self.enable_dns_support == true
+      error_message = "The selected VPC must have DNS support enabled."
+    }
+  }
+}
+
+data "aws_subnets" "private_subnets" {
+  filter {
+    name   = "tag:Tier"
+    values = ["Private"]
   }
 }
 
@@ -41,8 +65,8 @@ resource "aws_directory_service_directory" "ds_managed_ad" {
   type       = local.ds_managed_ad_type
 
   vpc_settings {
-    vpc_id     = var.ds_managed_ad_vpc_id
-    subnet_ids = var.ds_managed_ad_subnet_ids
+    vpc_id     = data.aws_vpc.vpc_id.id
+    subnet_ids = data.aws_subnets.private_subnets.ids
   }
 }
 
