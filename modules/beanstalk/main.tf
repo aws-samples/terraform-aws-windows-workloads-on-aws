@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -17,17 +17,33 @@ provider "aws" {
 
 data "aws_elastic_beanstalk_solution_stack" "net_framework" {
   most_recent = true
-  name_regex  = "^64bit Windows Server 2019 (.*) running IIS (.*)$"
+  name_regex  = "^64bit Windows Server 2022 (.*) running IIS (.*)$"
 }
 
-data "aws_vpc" "selected_vpc" {
-  id = var.vpc_id
-
+data "aws_vpc" "vpc_id" {
+  filter {
+    name   = "tag:Name"
+    values = ["Sample VPC for Windows workloads on AWS"]
+  }
   lifecycle {
     postcondition {
       condition     = self.enable_dns_support == true
       error_message = "The selected VPC must have DNS support enabled."
     }
+  }
+}
+
+data "aws_subnets" "private_subnets" {
+  filter {
+    name   = "tag:Tier"
+    values = ["Private"]
+  }
+}
+
+data "aws_subnets" "public_subnets" {
+  filter {
+    name   = "tag:Tier"
+    values = ["Public"]
   }
 }
 
@@ -83,7 +99,7 @@ resource "aws_iam_role" "beanstalk_net_framework_role" {
 resource "aws_security_group" "secgroup_beanstalk_net_framework" {
   name        = "secgroup_beanstalk_net_framework"
   description = "Allows traffic to Beanstalk resources"
-  vpc_id      = var.vpc_id
+  vpc_id      = data.aws_vpc.vpc_id.id
 
   dynamic "ingress" {
     for_each = local.inbound_ports
@@ -130,13 +146,13 @@ resource "aws_elastic_beanstalk_environment" "net_framework_environment" {
   setting {
     namespace = "aws:ec2:vpc"
     name      = "VPCId"
-    value     = var.vpc_id
+    value     = data.aws_vpc.vpc_id.id
   }
 
   setting {
     namespace = "aws:ec2:vpc"
     name      = "Subnets"
-    value     = join(",", var.private_subnets)
+    value     = join(",", data.aws_subnets.private_subnet.ids)
   }
 
   setting {
@@ -154,7 +170,7 @@ resource "aws_elastic_beanstalk_environment" "net_framework_environment" {
   setting {
     namespace = "aws:ec2:vpc"
     name      = "ELBSubnets"
-    value     = join(",", var.public_subnets)
+    value     = join(",", data.aws_subnets.public_subnet.ids)
   }
 
   setting {
@@ -172,7 +188,7 @@ resource "aws_elastic_beanstalk_environment" "net_framework_environment" {
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "InstanceType"
-    value     = var.ec2_instance_type
+    value     = "t3.xlarge"
   }
 
   setting {
@@ -181,11 +197,11 @@ resource "aws_elastic_beanstalk_environment" "net_framework_environment" {
     value     = aws_security_group.secgroup_beanstalk_net_framework.id
   }
 
-  setting {
-    namespace = "aws:autoscaling:launchconfiguration"
-    name      = "EC2KeyName"
-    value     = var.key_name
-  }
+  # setting {
+  #   namespace = "aws:autoscaling:launchconfiguration"
+  #   name      = "EC2KeyName"
+  #   value     = var.key_name
+  # }
 
   setting {
     namespace = "aws:ec2:vpc"

@@ -12,7 +12,7 @@ Terraform module which manages AWS Elastic Beanstalk resources related to Window
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 
