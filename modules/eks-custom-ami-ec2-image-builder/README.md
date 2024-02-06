@@ -4,7 +4,7 @@ Terraform module which deploys an EC2 Image Builder pipeline that creates EKS cu
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 - **eks_cluster_version (string)**: Amazon EKS cluster version

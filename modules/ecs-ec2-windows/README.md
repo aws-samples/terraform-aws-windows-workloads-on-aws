@@ -4,7 +4,7 @@ Terraform module which deploys an ECS cluster for Windows containers using EC2 W
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 - **ecs_windows_cluster_name (string)**: Name for the ECS cluster

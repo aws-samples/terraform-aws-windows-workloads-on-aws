@@ -4,7 +4,7 @@ Terraform module which deploys Amazon FSx for Windows Filesystem integrated with
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 

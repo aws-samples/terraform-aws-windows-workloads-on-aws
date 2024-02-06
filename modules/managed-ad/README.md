@@ -4,8 +4,8 @@ Terraform module which manages AWS Microsoft Managed AD resources.
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
-- hashicorp/random | version = "~>3.3.0"
+- hashicorp/aws | version = "~> 5.0"
+- hashicorp/random | version = "~>3.6.0"
 
 ## Variables description
 

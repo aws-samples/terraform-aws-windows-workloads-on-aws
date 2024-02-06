@@ -4,7 +4,7 @@ Terraform module which creates and RDS instance for SQL Server.
 
 ## Providers
 
-- hashicorp/aws | version = "~> 4.0"
+- hashicorp/aws | version = "~> 5.0"
 
 ## Variables description
 - **rdssql_db_subnet_group_name (string)**: Name for the DB subnet group
