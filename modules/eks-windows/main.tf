@@ -22,7 +22,7 @@ provider "kubernetes" {
 data "aws_vpc" "vpc_id" {
   filter {
     name   = "tag:Name"
-    values = ["Sample VPC for Windows workloads on AWS"]
+    values = ["VPC"]
   }
   lifecycle {
     postcondition {

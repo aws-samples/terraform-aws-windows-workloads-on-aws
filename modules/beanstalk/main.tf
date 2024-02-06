@@ -23,7 +23,7 @@ data "aws_elastic_beanstalk_solution_stack" "net_framework" {
 data "aws_vpc" "vpc_id" {
   filter {
     name   = "tag:Name"
-    values = ["Sample VPC for Windows workloads on AWS"]
+    values = ["VPC"]
   }
   lifecycle {
     postcondition {

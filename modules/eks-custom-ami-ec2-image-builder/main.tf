@@ -27,7 +27,7 @@ data "aws_ami" "eks_optimized_ami" {
 data "aws_vpc" "vpc_id" {
   filter {
     name   = "tag:Name"
-    values = ["Sample VPC for Windows workloads on AWS"]
+    values = ["VPC"]
   }
   lifecycle {
     postcondition {
