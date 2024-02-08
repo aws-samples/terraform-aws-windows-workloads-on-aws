@@ -14,27 +14,8 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-}
-
-data "aws_vpc" "vpc_id" {
-  filter {
-    name   = "tag:Name"
-    values = ["VPC"]
-  }
-  lifecycle {
-    postcondition {
-      condition     = self.enable_dns_support == true
-      error_message = "The selected VPC must have DNS support enabled."
-    }
-  }
-}
-
-data "aws_subnets" "private_subnets" {
-  filter {
-    name   = "tag:Tier"
-    values = ["Private"]
-  }
+  region  = var.aws_region
+  profile = "msft_python_automation"
 }
 
 ## Sets Admin secret
@@ -65,8 +46,8 @@ resource "aws_directory_service_directory" "ds_managed_ad" {
   type       = local.ds_managed_ad_type
 
   vpc_settings {
-    vpc_id     = data.aws_vpc.vpc_id.id
-    subnet_ids = data.aws_subnets.private_subnets.ids
+    vpc_id     = var.vpc_id
+    subnet_ids = [var.private_subnet_id_1, var.private_subnet_id_2]
   }
 }
 
