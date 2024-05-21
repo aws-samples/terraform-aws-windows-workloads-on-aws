@@ -15,7 +15,6 @@ terraform {
 
 provider "aws" {
   region  = var.aws_region
-  profile = "msft_python_automation"
 }
 
 ## Sets Admin secret
